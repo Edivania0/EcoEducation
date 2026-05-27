@@ -1,0 +1,396 @@
+<!-- quiz.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/Quiz.css">
+
+    <title>Quiz Interativo</title>
+
+  </head>
+
+  <body>
+
+    <section class="quiz-tela">
+
+      <!-- BARRA INICIAL -->
+      <header>
+        <div class="logo">
+          <img src="../imagens/ecoeducation.png" alt="Logo Educação Ambiental">
+          <a href="../index.html">EcoEducation</a>
+        </div>
+        <nav>
+          <a href="../index.html#return">Conteúdos</a>
+          <a href="Quiz.html">Quiz Interativo</a>
+          <!-- <div class="pesquisa">
+            <input type="text" placeholder="Pesquisar...">
+          </div> -->
+        </nav>
+      </header>
+
+
+      <!-- Logo Da Pagina-->
+      <div class="overlay">
+
+        <div class="titulo">
+            <img src="../imagens/logo.png" alt="Imagem escrita do Quiz Interativo">
+        </div>
+
+      </div>
+
+      <div class="quiz-container">
+        <button id="startBtn">Iniciar</button>
+
+        <!-- CAIXA DO QUIZ -->
+          <div id="quizBox" class="hidden">
+            <h2 id="question"></h2>
+            <div id="answers"></div>
+          </div>
+
+        <!-- RESULTADO -->
+        <div id="result" class="hidden"></div>
+        <canvas id="fogosCanvas"></canvas>
+
+      </div>
+      <script>
+
+      // Funções e parte JavaScript
+
+      //Perguntas
+      const perguntas = [
+      {
+        pergunta: "Qual atitude ajuda o meio ambiente?",
+        respostas: [
+          "Jogar lixo na rua",
+          "Reciclar materiais",
+          "Desperdiçar água",
+          "Queimar plástico"
+        ],
+        correta: 1
+      },
+
+      {
+        pergunta: "O que é reciclagem?",
+        respostas: [
+          "Destruir materiais",
+          "Reutilizar materiais",
+          "Jogar no lixo",
+          "Queimar resíduos"
+        ],
+        correta: 1
+      },
+
+      {
+        pergunta: "Qual recurso natural deve ser economizado?",
+        respostas: [
+          "Água",
+          "Plástico",
+          "Vidro",
+          "Metal"
+        ],
+        correta: 0
+      },
+
+      {
+        pergunta: "Qual energia é renovável?",
+        respostas: [
+          "Petróleo",
+          "Carvão",
+          "Energia solar",
+          "Gasolina"
+        ],
+        correta: 2
+      },
+
+      {
+        pergunta: "Qual gás contribui para o aquecimento global?",
+        respostas: [
+          "Oxigênio",
+          "Gás carbônico",
+          "Nitrogênio",
+          "Hélio"
+        ],
+        correta: 1
+      },
+
+      {
+        pergunta: "Qual dessas ações ajuda a natureza?",
+        respostas: [
+          "Desmatamento",
+          "Poluição",
+          "Plantio de árvores",
+          "Queimadas"
+        ],
+        correta: 2
+      },
+
+      {
+        pergunta: "O lixo orgânico pode virar:",
+        respostas: [
+          "Vidro",
+          "Compostagem",
+          "Plástico",
+          "Metal"
+        ],
+        correta: 1
+      },
+
+      {
+        pergunta: "Qual cor representa coleta seletiva de papel?",
+        respostas: [
+          "Azul",
+          "Verde",
+          "Vermelho",
+          "Amarelo"
+        ],
+        correta: 0
+      },
+
+      {
+        pergunta: "O desmatamento causa:",
+        respostas: [
+          "Mais árvores",
+          "Perda de biodiversidade",
+          "Mais rios",
+          "Ar puro"
+        ],
+        correta: 1
+      },
+
+      {
+        pergunta: "O que significa sustentabilidade?",
+        respostas: [
+          "Usar recursos sem pensar",
+          "Preservar para o futuro",
+          "Poluir rios",
+          "Destruir florestas"
+        ],
+        correta: 1
+      },
+
+      {
+        pergunta: "Qual das atitudes abaixo ajuda a reduzir a quantidade de lixo que produzimos?",
+        respostas: [
+          "Usar sacolas de plástico várias vezes.",
+          "Usar sacolas plásticas apenas uma vez.",
+          "Jogar o lixo no chão.",
+          "Comprar mais produtos embalados."
+        ],
+        correta: 1
+      },
+
+      {
+        pergunta: "Por que é importante falar sobre sustentabilidade na escola?",
+        respostas: [
+          "Para criar mais problemas ambientais.",
+          "Para conscientizar as crianças sobre a importância de cuidar do planeta.",
+          "Para ignorar a realidade do meio ambiente.",
+          "Para deixar tudo como está."
+        ],
+        correta: 2
+      },
+
+      {
+        pergunta: "Qual das medidas abaixo não pode ajudar a reduzir o aquecimento globa",
+        respostas: [
+          "Reduzir e reutilizar materiais.",
+          "Preservar florestas e áreas verdes.",
+          "Utilizar fontes de energia renováveis.",
+          "Produzir lixo eletrônico"
+        ],
+        correta: 3
+      },
+
+      {
+        pergunta: "A lavagem de roupas deve ser feita com a máquina cheia para economizar água.",
+        respostas: [
+          "Verdadeiro",
+          "Falso"
+        ],
+        correta: 1
+      }
+
+      ];
+
+      let perguntaAtual = 0;
+      let pontos = 0;
+
+      const startBtn = document.getElementById("startBtn");
+      const quizBox = document.getElementById("quizBox");
+      const question = document.getElementById("question");
+      const answers = document.getElementById("answers");
+      const result = document.getElementById("result");
+
+      startBtn.addEventListener("click", iniciarQuiz);
+
+      let perguntasSelecionadas = [];
+
+      /* ESCOLHER PERGUNTAS ALEATÓRIAS*/
+      function selecionarPerguntasAleatorias(){
+
+        let copia = [...perguntas];
+        perguntasSelecionadas = [];
+        for(let i = 0; i < 10; i++){
+          let indice = Math.floor(Math.random() * copia.length);
+          perguntasSelecionadas.push(copia[indice]);
+          copia.splice(indice,1);
+        }
+      }
+      
+      /* INICIO */
+      function iniciarQuiz(){
+        perguntaAtual = 0;
+        pontos = 0;
+        selecionarPerguntasAleatorias();
+        result.innerHTML = "";
+        result.classList.add("hidden");
+        startBtn.classList.add("hidden");
+        quizBox.classList.remove("hidden");
+        mostrarPergunta();
+      }
+
+      /* MOSTRAR PERGUNTAS */
+      function mostrarPergunta(){
+        answers.innerHTML = "";
+        let q = perguntasSelecionadas[perguntaAtual];
+        question.innerText = q.pergunta;
+        q.respostas.forEach((resposta, index) => {
+          const btn = document.createElement("button");
+          btn.innerText = resposta;
+          btn.classList.add("answer-btn");
+          btn.onclick = () => verificarResposta(index);
+          answers.appendChild(btn);
+        });
+
+      }
+
+      /* ACERTOU? */
+      function verificarResposta(index){
+        if(index === perguntasSelecionadas[perguntaAtual].correta){
+          pontos++;
+        }
+        perguntaAtual++;
+        if(perguntaAtual < perguntasSelecionadas.length){
+          mostrarPergunta();
+        }else{
+          finalizarQuiz();
+        }
+      }
+
+
+      /* Fogos de Artificio */
+      const canvas = document.getElementById("fogosCanvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = [];
+
+      /* FOGOS */
+      function criarFogos(){
+        for(let i = 0; i < 100; i++){
+          particles.push({
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: Math.random() * 4 + 2,
+            color: `hsl(${Math.random()*360},100%,50%)`,
+            speedX: (Math.random() - 0.5) * 10,
+            speedY: (Math.random() - 0.5) * 10,
+            alpha: 1
+          });
+        }
+      }
+
+      function animarFogos(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        particles.forEach((p,index)=>{
+          p.x += p.speedX;
+          p.y += p.speedY;
+          p.alpha -= 0.01;
+          ctx.globalAlpha = p.alpha;
+          ctx.beginPath();
+          ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+          if(p.alpha <= 0){
+            particles.splice(index,1);
+          }
+        });
+        requestAnimationFrame(animarFogos);
+      }
+      animarFogos();
+
+      /* RESULTADO */
+      function finalizarQuiz(){
+        quizBox.classList.add("hidden");
+
+        if(pontos >= 1){
+          iniciarCelebracao();
+        }
+        if(pontos < 1){
+          result.classList.remove("hidden");
+          result.innerHTML = `
+          <div class="resultado-box">
+            <h1>Resultado</h1>
+            <p>
+                Você acertou ${pontos} de 10 perguntas!
+            </p>
+            <button onclick="reiniciarQuiz()" class="restart-btn">
+                Jogar Novamente
+            </button>
+          </div>
+          `;
+        }
+      }
+
+      // Iniciar Fogos
+      function iniciarCelebracao(){
+        canvas.style.display = "block";
+        let intervalo = setInterval(()=>{
+          criarFogos(
+            Math.random() * canvas.width,
+            Math.random() * canvas.height / 2
+          );
+        },500);
+        setTimeout(()=>{
+          clearInterval(intervalo);
+          canvas.style.display = "none";
+          result.classList.remove("hidden");
+          result.innerHTML = `
+            <div class="parabens-box">
+                <h1>🎉 PARABÉNS 🎉</h1>
+                <p>
+                    Você acertou ${pontos} de 10 perguntas!
+                </p>
+                <button onclick="reiniciarQuiz()" class="restart-btn">
+                    Jogar Novamente
+                </button>
+            </div>
+          `;
+        },1500);
+      }
+
+      /* JOGAR DENOVO */
+      function reiniciarQuiz(){
+        perguntaAtual = 0;
+        pontos = 0;
+        perguntasSelecionadas = [];
+
+        /* LIMPA RESULTADO */
+        result.innerHTML = "";
+
+        /* ESCONDE RESULTADO */
+        result.classList.add("hidden");
+
+        /* ESCONDE QUIZ ANTIGO */
+        quizBox.classList.add("hidden");
+
+        /* MOSTRA BOTÃO */
+        startBtn.classList.remove("hidden");
+      }
+      </script>
+    </section>
+  </body>
+</html>
