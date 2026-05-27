@@ -135,6 +135,11 @@ nav a:hover{
   align-items:center;
 }
 
+/* Hero1 */
+.hero1{
+    background-color: #2b1740;
+}
+
 .hero1 h2{
     padding:40px;
     display:flex;
