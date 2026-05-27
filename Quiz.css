@@ -119,7 +119,7 @@ nav a:hover{
         rgba(70,0,120,0.35),
         rgba(20,0,50,0.45)
     ),
-    url('../imagens/imagem\ da\ tela\ de\ jogos\ \(2\).png');
+    url('imagem\ da\ tela\ de\ jogos\ \(2\).png');
 
     background-size:cover;
     background-position:center;
