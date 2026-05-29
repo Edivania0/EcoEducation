@@ -231,6 +231,8 @@
 
       let perguntaAtual = 0;
       let pontos = 0;
+      let perguntasSelecionadas = [];
+
 
       const startBtn = document.getElementById("startBtn");
       const quizBox = document.getElementById("quizBox");
@@ -239,8 +241,6 @@
       const result = document.getElementById("result");
 
       startBtn.addEventListener("click", iniciarQuiz);
-
-      let perguntasSelecionadas = [];
 
       /* ESCOLHER PERGUNTAS ALEATÓRIAS*/
       function selecionarPerguntasAleatorias(){
